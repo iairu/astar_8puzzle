@@ -52,3 +52,16 @@ class State(object):
     def __eq__(self, _state: object) -> bool:
         # for set()
         return False if not isinstance(_state, State) else self.elms == _state.elms
+
+    def __str__(self):
+        # for print()
+        s = ""
+        n = self.n
+        last = n * n - 1 # no new line at end of print
+        for ei, ev in enumerate(self.elms):
+            # output
+            s += str(ev) + " "
+            # newline calc
+            if (ei < last and (ei + 1) % n == 0): s += "\n"
+        return s
+
