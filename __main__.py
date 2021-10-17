@@ -16,14 +16,18 @@ states = set()
 # number pair check (if there is a lone number in one of the user input states then they can't be accepted)
 assert (len(init) == len(fin)), "Initial and final states must have the same element count"
 init_count = 0
+found_zero = False
 for i in init.elms:
     init_count += 1
     found = False
     for j in fin.elms:
         if (i == j): 
             found = True
+            if (i == 0):
+                found_zero = True
             break
     assert (found == True), f"An element '{i}' is missing from the final state."
+assert (found_zero == True), f"An element '0' (representing an empty field) must be included in both states."
 # side length is not part of the state and is simply checked ahead to speed things up
 assert (init_count == n * n), f"The number of elms in a state has to be n * n, otherwise it wouldn't be much of a side length, now would it?"
 
