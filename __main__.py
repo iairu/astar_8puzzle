@@ -3,11 +3,11 @@ from _alg import *
 
 # later will be user input
 n = 3 # 8-puzzle side length
-init = State([3,2,8,4,5,6,7,1,0]) # initial state, 0 => empty field
-fin = State([1,2,3,4,5,6,7,8,0]) # final state
+init = State(n,[3,2,8,4,5,6,7,1,0]) # initial state, 0 => empty field
+fin = State(n,[1,2,3,4,5,6,7,8,0]) # final state
 
-init2 = State([5,0,8,4,2,1,7,3,6]) # initial state, 0 => empty field # todo later: delete, temp additional print check
-fin2 = State([1,2,3,4,5,6,7,8,0]) # final state # todo later: delete, temp additional print check
+init2 = State(n,[5,0,8,4,2,1,7,3,6]) # initial state, 0 => empty field # todo later: delete, temp additional print check
+fin2 = State(n,[1,2,3,4,5,6,7,8,0]) # final state # todo later: delete, temp additional print check
 
 # existing states that if reached again won't be considered by the algorithm
 # no need to include the final state, because once it will be reached the algorithm will end successfuly
@@ -32,8 +32,8 @@ assert (found_zero == True), f"An element '0' (representing an empty field) must
 assert (init_count == n * n), f"The number of elms in a state has to be n * n, otherwise it wouldn't be much of a side length, now would it?"
 
 # manhattan calc for A* alg: c(u) = g(u) + h(u), this is h(u)
-print(f"Should be 8: {AStar.manhattanSum(init, fin, n)} and this 0: {AStar.manhattanSum(fin, fin, n)}")
-print(f"Should be 13: {AStar.manhattanSum(init2, fin2, n)}")
+print(f"Should be 8: {AStar.manhattanSum(init, fin)} and this 0: {AStar.manhattanSum(fin, fin)}")
+print(f"Should be 13: {AStar.manhattanSum(init2, fin2)}")
 
 
 states.add(init) # todo move this addition after the state has been expanded with operators into a tree

@@ -1,8 +1,19 @@
+from enum import Enum
+from array import array
 
+class StateOperator(Enum):
+    LEFT = 0
+    RIGHT = 1
+    UP = 2
+    DOWN = 3
 
 class State(object):
 
-    def __init__(self, _elms: tuple): 
+    def __init__(self, n: int, _elms: tuple):
+        # todo later: cache position of 0 elm thorugh init args for quick access in operation()
+        # todo later  \_ this way only init and fin states will have to be precalculated thru loops and operation() won't have to loop over elms to find the 0
+        # todo later: cache manhattanSum as a tuple
+        
         # create a hash from a tuple
         # hash is needed for set()
         
@@ -16,8 +27,17 @@ class State(object):
         # actually properly generate and save the hash
         self._elms_hash = hash(h)
 
+        # side length
+        self.n = n
+
         # state elms must not be changed, that's why tuple (which is an immutable list)
         self.elms = _elms
+
+        # defaults for unexplored directions
+        self.left = None
+        self.right = None
+        self.up = None
+        self.down = None
 
         return
 

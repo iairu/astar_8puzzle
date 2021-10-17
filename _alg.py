@@ -2,7 +2,8 @@ from _math import *
 from _state import State
 
 class AStar:
-    def manhattanSum(_from: State, _to: State, n: int) -> int:
+    def manhattanSum(_from: State, _to: State) -> int:
+        n = _from.n
         h = 0;
         for fi,fval in enumerate(_from.elms):
             if (fval == 0): continue # manhattan does not add empty field (X) to the sum
