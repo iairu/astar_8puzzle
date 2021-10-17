@@ -65,3 +65,84 @@ class State(object):
             if (ei < last and (ei + 1) % n == 0): s += "\n"
         return s
 
+
+    def operation(self, operator: StateOperator):
+        # return if already explored
+        if (operator == StateOperator.LEFT and self.left != None):
+            return self.left
+        elif (operator == StateOperator.RIGHT and self.right != None):
+            return self.right
+        elif (operator == StateOperator.UP and self.up != None):
+            return self.up
+        elif (operator == StateOperator.DOWN and self.down != None):
+            return self.down
+
+        # side length
+        n = self.n
+
+        # find 0
+        zcol = -1
+        zrow = -1
+        for ei, ev in enumerate(self.elms):
+            if (ev == 0):
+                zrow = int(ei / n)
+                zcol = ei % n
+                break
+        # assert (zcol == -1 or zrow == -1), "There is no 0 in the current state" # already checked in main, maybe delete?
+
+        # conclude operation based on operator enum over 0 and relevant elm next to it
+        elms = array("i",self.elms)
+        if (operator == StateOperator.LEFT):
+            # mrow = zrow
+            # mcol = zcol + 1
+            if (zcol + 1 >= n): # same state, hit border
+                self.left = None
+                return None
+            else:
+                mpos = zrow * n + (zcol + 1)
+                zpos = mpos - 1
+                elms[zpos] = elms[mpos]
+                elms[mpos] = 0
+                self.left = State(n, elms)
+                return self.left
+        elif (operator == StateOperator.RIGHT):
+            # mrow = zrow
+            # mcol = zcol - 1
+            if (zcol - 1 < 0): # same state, hit border
+                self.right = None
+                return None
+            else:
+                mpos = zrow * n + (zcol - 1)
+                zpos = mpos + 1
+                elms[zpos] = elms[mpos]
+                elms[mpos] = 0
+                self.right = State(n, elms)
+                return self.right
+        elif (operator == StateOperator.UP):
+            # mrow = zrow + 1
+            # mcol = zcol
+            if (zrow + 1 >= n): # same state, hit border
+                self.up = None
+                return None
+            else:
+                mpos = (zrow + 1) * n + zcol
+                zpos = mpos - n
+                elms[zpos] = elms[mpos]
+                elms[mpos] = 0
+                self.up = State(n, elms)
+                return self.up
+        elif (operator == StateOperator.DOWN):
+            # mrow = zrow - 1
+            # mcol = zcol
+            if (zrow - 1 < 0): # same state, hit border
+                self.up = None
+                return None
+            else:
+                mpos = (zrow - 1) * n + zcol
+                zpos = mpos + n
+                elms[zpos] = elms[mpos]
+                elms[mpos] = 0
+                self.down = State(n, elms)
+                return self.down
+
+        return None # unreachable unless error
