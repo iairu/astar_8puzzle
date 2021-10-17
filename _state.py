@@ -39,6 +39,11 @@ class State(object):
         self.up = None
         self.down = None
 
+        # defaults for delta position (non-0) compared to parent state, because every state only 1 elm moves
+        # this is to directly identify it for manhattanDelta(), so that the whole manhattanSum() doesn't need
+        # to be looped over and recalculated from scratch
+        self.mpos = None
+        self.mval = None
         return
 
     def __len__(self):
@@ -104,6 +109,8 @@ class State(object):
                 elms[zpos] = elms[mpos]
                 elms[mpos] = 0
                 self.left = State(n, elms)
+                self.left.mpos = zpos # zpos is now mpos
+                self.left.mval = elms[zpos]
                 return self.left
         elif (operator == StateOperator.RIGHT):
             # mrow = zrow
@@ -117,6 +124,8 @@ class State(object):
                 elms[zpos] = elms[mpos]
                 elms[mpos] = 0
                 self.right = State(n, elms)
+                self.right.mpos = zpos
+                self.right.mval = elms[zpos]
                 return self.right
         elif (operator == StateOperator.UP):
             # mrow = zrow + 1
@@ -130,6 +139,8 @@ class State(object):
                 elms[zpos] = elms[mpos]
                 elms[mpos] = 0
                 self.up = State(n, elms)
+                self.up.mpos = zpos
+                self.up.mval = elms[zpos]
                 return self.up
         elif (operator == StateOperator.DOWN):
             # mrow = zrow - 1
@@ -143,6 +154,8 @@ class State(object):
                 elms[zpos] = elms[mpos]
                 elms[mpos] = 0
                 self.down = State(n, elms)
+                self.down.mpos = zpos
+                self.down.mval = elms[zpos]
                 return self.down
 
         return None # unreachable unless error
