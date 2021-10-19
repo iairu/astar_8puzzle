@@ -4,10 +4,10 @@ from _state import *
 class AStar:
     def manhattanSum(_from: State, _to: State) -> int:
         n = _from.n
-        h = 0;
+        hsum = 0; # manhattan sum
         for fi,fval in enumerate(_from.elms):
             if (fval == 0): continue # manhattan does not add empty field (X) to the sum
-            delta = 0
+            h = 0 # manhattan elm
             for ti, tval in enumerate(_to.elms):
                 if (fval == tval): # found the same element, now calc delta
                     frow = int(fi / n)
@@ -18,10 +18,10 @@ class AStar:
                     drow = absInt(trow - frow) # delta left / right
                     dcol = absInt(tcol - fcol) # delta up / down
 
-                    delta = drow + dcol # delta up / down / left / right ONLY, no diagonals
+                    h = drow + dcol # delta up / down / left / right ONLY, no diagonals
                     break
-            h += delta
-        return h
+            hsum += h
+        return hsum
 
     def manhattanDelta(_from: State, _to: State) -> int:
         n = _from.n
