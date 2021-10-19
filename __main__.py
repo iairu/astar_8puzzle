@@ -9,9 +9,8 @@ fin = State(n,[1,2,3,4,5,6,7,8,0]) # final state
 init2 = State(n,[5,0,8,4,2,1,7,3,6]) # initial state, 0 => empty field # todo later: delete, temp additional print check
 fin2 = State(n,[1,2,3,4,5,6,7,8,0]) # final state # todo later: delete, temp additional print check
 
-# existing states that if reached again won't be considered by the algorithm
-# no need to include the final state, because once it will be reached the algorithm will end successfuly
-states = set() 
+init3 = State(n,[1,2,0,4,5,3,7,8,6]) # initial state, 0 => empty field # todo later: delete, temp additional print check
+fin3 = State(n,[1,2,3,4,5,6,7,8,0]) # final state # todo later: delete, temp additional print check
 
 # number pair check (if there is a lone number in one of the user input states then they can't be accepted)
 assert (len(init) == len(fin)), "Initial and final states must have the same element count"
@@ -33,4 +32,6 @@ assert (init_count == n * n), f"The number of elms in a state has to be n * n, o
 
 AStar.explore(init, fin)
 
-states.add(init) # todo move this addition after the state has been expanded with operators into a tree
+AStar.explore(init2, fin2)
+
+AStar.explore(init3, fin3)

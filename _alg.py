@@ -53,18 +53,20 @@ class AStar:
     def explore(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
         # Finally... THE ALGORITHM ITSELF
 
+        # existing states that if reached again won't be considered by the algorithm
+        # no need to include the final state, because once it will be reached the algorithm will end successfuly
         if (states == None):
             states = set() # set of explored states to avoid infinite loop
-        elif (_from in states):
-            return states # already explored
-        else:
-            states.add(_from)
+        states.add(_from)
 
-        if (g == None): # tree level, also price in A*
-            g = 0 # default price
+        # tree depth for A*
+        if (g == None): 
+            g = 0 # root depth price
+        g_next = g + 1 # next depth price
 
-        if (h == None): # manhattan sum from _from to _to
-            h = AStar.manhattanSum(_from, _to) # default manhattan sum
+        # manhattan for A*
+        if (h == None):
+            h = AStar.manhattanSum(_from, _to) # default manhattan sum from _from to _to
 
         print("FROM:")
         print(_from)
@@ -72,10 +74,7 @@ class AStar:
         print("TO:")
         print(_to)
 
-        # todo c = g + h
         print(f"g, h = {g}, {h}")
-
-        g_next = g + 1 # next price
 
         _from.operation(StateOperator.LEFT)
         if (_from.left != None and _from.left not in states):
