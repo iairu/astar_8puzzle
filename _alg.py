@@ -50,7 +50,7 @@ class AStar:
 
         return delta
 
-    def explore(_from: State, _to: State, _from_level: int = 0, states: set = None) -> set:
+    def explore(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
         # Finally... THE ALGORITHM ITSELF
 
         if (states == None):
@@ -60,36 +60,48 @@ class AStar:
         else:
             states.add(_from)
 
+        if (g == None): # tree level, also price in A*
+            g = 0 # default price
 
-        g_parent = _from_level
-        h_parent = AStar.manhattanSum(_from, _to)
-        c_parent = g_parent + h_parent # todo: where do i use this?
+        if (h == None): # manhattan sum from _from to _to
+            h = AStar.manhattanSum(_from, _to) # default manhattan sum
 
+        print("FROM:")
+        print(_from)
+
+        print("TO:")
+        print(_to)
+
+        # todo c = g + h
+        print(f"g, h = {g}, {h}")
+
+        g_next = g + 1 # next price
 
         _from.operation(StateOperator.LEFT)
-        if (_from.left != None):
-            g = _from_level + 1
-            h = h_parent + AStar.manhattanDelta(_from.left,_to)
-            c_left = g + h
+        if (_from.left != None and _from.left not in states):
+            h_next = h + AStar.manhattanDelta(_from.left, _to) # next manhattan sum
+            c_left = g_next + h_next
+            print(f"Left: c ({c_left}) = g + h = ({g_next} + {h_next})")
 
         _from.operation(StateOperator.RIGHT)
-        if (_from.right != None):
-            g = _from_level + 1
-            h = h_parent + AStar.manhattanDelta(_from.right,_to)
-            c_right = g + h
+        if (_from.right != None and _from.right not in states):
+            h_next = h + AStar.manhattanDelta(_from.right, _to)
+            c_right = g_next + h_next
+            print(f"Right: c ({c_right}) = g + h = ({g_next} + {h_next})")
 
         _from.operation(StateOperator.UP)
-        if (_from.up != None):
-            g = _from_level + 1
-            h = h_parent + AStar.manhattanDelta(_from.up,_to)
-            c_up = g + h
+        if (_from.up != None and _from.up not in states):
+            h_next = h + AStar.manhattanDelta(_from.up, _to)
+            c_up = g_next + h_next
+            print(f"Up: c ({c_up}) = g + h = ({g_next} + {h_next})")
 
         _from.operation(StateOperator.DOWN)
-        if (_from.down != None):
-            g = _from_level + 1
-            h = h_parent + AStar.manhattanDelta(_from.down,_to)
-            c_down = g + h
+        if (_from.down != None and _from.down not in states):
+            h_next = h + AStar.manhattanDelta(_from.down, _to)
+            c_down = g_next + h_next
+            print(f"Down: c ({c_down}) = g + h = ({g_next} + {h_next})")
 
+        #self.explore(_from.left, _to, g + 1, h + self.manhattanDelta(_from.left, _to), states)
         # todo comparison of c_left, right, up, down: order them lowest first, then explore until _to found
         # todo: \_ for each of these make sure to "return states" as any newly added ones in say c_left will be useful for c_right and so on
         # todo: \_ the final sequence of operations necessary to get from _from to _to should just get saved in the AStar class, but for ...
