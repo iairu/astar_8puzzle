@@ -1,4 +1,3 @@
-from os import get_inheritable
 from _math import *
 from _state import *
 
@@ -27,20 +26,28 @@ class AStar:
     def manhattanDelta(_from: State, _to: State) -> int:
         n = _from.n
         delta = 0;
-        fi = _from.mpos
-        fval = _from.mval
+
+        # get ti (final position of moved element)
+        fi = _from.mpos # current position of moved element
+        fval = _from.elms[fi] # value of moved element
         for ti, tval in enumerate(_to.elms):
             if (fval == tval): # found the same element, now calc delta
-                frow = int(fi / n)
-                fcol = fi % n
-                trow = int(ti / n)
-                tcol = ti % n
-
-                drow = absInt(trow - frow) # delta left / right
-                dcol = absInt(tcol - fcol) # delta up / down
-
-                delta = drow + dcol # delta up / down / left / right ONLY, no diagonals
                 break
+
+        frow = int(fi / n) # current row of moved element
+        fcol = fi % n # current column of moved element
+
+        # pfi = fi - _from.mdelta[0] - (_from.mdelta[1] * n) # previous position
+        pfrow = frow - _from.mdelta.value[1] # previous row of moved element
+        pfcol = fcol - _from.mdelta.value[0] # previous column of moved element
+        
+        trow = int(ti / n) # final row of moved element
+        tcol = ti % n # final column of moved element
+
+        h = absInt(tcol - fcol) + absInt(trow - frow) # manhattan current position to finish (fi)
+        ph = absInt(tcol - pfcol) + absInt(trow - pfrow) # manhattan previous position to finish (pfi)
+        delta = h - ph # manhattan delta of moved element to finish
+
         return delta
 
     def explore(_from: State, _to: State, _from_level: int = 0, states: set = None) -> set:

@@ -2,10 +2,13 @@ from enum import Enum
 from array import array
 
 class StateOperator(Enum):
-    LEFT = 0
-    RIGHT = 1
-    UP = 2
-    DOWN = 3
+    # defined as delta [column, row] of position
+    # todo: if diagonal directions would ever be considered, it would be useful to turn it into a price as well
+    NONE = [0,0] # default for initialization, init and final states
+    LEFT = [-1,0]
+    RIGHT = [1,0]
+    UP = [0,-1]
+    DOWN = [0,1]
 
 class State(object):
 
@@ -39,11 +42,12 @@ class State(object):
         self.up = None
         self.down = None
 
-        # defaults for delta position (non-0) compared to parent state, because every state only 1 elm moves
+        # delta compared to parent state, because every state only 1 elm moves
         # this is to directly identify it for manhattanDelta(), so that the whole manhattanSum() doesn't need
-        # to be looped over and recalculated from scratch
-        self.mpos = None
-        self.mval = None
+        # to be recalculated from scratch
+
+        self.mdelta = StateOperator.NONE # state operator used over parent to generate this state
+        self.mpos = None # position of moved elements
         return
 
     def __len__(self):
@@ -96,6 +100,8 @@ class State(object):
         # assert (zcol == -1 or zrow == -1), "There is no 0 in the current state" # already checked in main, maybe delete?
 
         # conclude operation based on operator enum over 0 and relevant elm next to it
+        # mrow/mcol/mpos = modified row/column/position
+        # zrow/zcol/zpos = zero row/column/position
         elms = array("i",self.elms)
         if (operator == StateOperator.LEFT):
             # mrow = zrow
@@ -110,7 +116,7 @@ class State(object):
                 elms[mpos] = 0
                 self.left = State(n, elms)
                 self.left.mpos = zpos # zpos is now mpos
-                self.left.mval = elms[zpos]
+                self.left.mdelta = StateOperator.LEFT # -1;0
                 return self.left
         elif (operator == StateOperator.RIGHT):
             # mrow = zrow
@@ -125,7 +131,7 @@ class State(object):
                 elms[mpos] = 0
                 self.right = State(n, elms)
                 self.right.mpos = zpos
-                self.right.mval = elms[zpos]
+                self.right.mdelta = StateOperator.RIGHT # 1;0
                 return self.right
         elif (operator == StateOperator.UP):
             # mrow = zrow + 1
@@ -140,7 +146,7 @@ class State(object):
                 elms[mpos] = 0
                 self.up = State(n, elms)
                 self.up.mpos = zpos
-                self.up.mval = elms[zpos]
+                self.up.mdelta = StateOperator.UP # 0;-1
                 return self.up
         elif (operator == StateOperator.DOWN):
             # mrow = zrow - 1
@@ -155,7 +161,7 @@ class State(object):
                 elms[mpos] = 0
                 self.down = State(n, elms)
                 self.down.mpos = zpos
-                self.down.mval = elms[zpos]
+                self.down.mdelta = StateOperator.DOWN # 0;1
                 return self.down
 
         return None # unreachable unless error
