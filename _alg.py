@@ -56,33 +56,40 @@ class AStar:
 
     # ---------------------------------
 
-    def explore(_from: State, _to: State, _print: int = 2):
-        # Public exploration function
+    def explore(_from: State, _to: State, _rec_limit: int = 1000, _print: int = 2):
+        # Public exploration function with a recursion limit
         # returns based on internal __explore__ function
 
         # Call internal function and get variable result
-        explored = AStar.__explore__(_from, _to)
+        explored = AStar.__explore__(_from, _to, _rec_limit)
 
         # Printing depending on result
         if (_print > 0):
-            if isinstance(explored,FinSequence):
+            if (explored == None):
+                print("No solution found. Recursion limit reached.")
+            elif isinstance(explored,FinSequence):
                 explored.print(True if (_print > 1) else False)
             elif isinstance(explored,set):
                 print("No solution possible. All possible states explored.")
 
         return explored
 
-    def __explore__(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
+    def __explore__(_from: State, _to: State, _rec_limit: int, g: int = None, h: int = None, states: set = None):
         # Internal exploration function - The A* algorithm
 
         # returns sequence of ops if final found (tried to return list but it misidentified it as a set)
         # otherwise returns set of explored states (if all possible states explored and no solution found)
+        # can also return None if recursion limit reached
 
         # CHECKS AND DEFAULTS
 
         # if final state return FinSequence, first value will be price
         if (_from.elms == _to.elms):
             return FinSequence(g)
+
+        # recursion limit check
+        if (_rec_limit <= 0):
+            return None
 
         # existing states that if reached again won't be considered by the algorithm
         # no need to include the final state, because once it will be reached the algorithm will end successfuly
@@ -137,13 +144,13 @@ class AStar:
             if isinstance(d, Direction):
                 # Explore in the correct direction
                 if (d.operation == StateOperator.LEFT):
-                    ret = AStar.__explore__(left, _to, g_next, h_left, states)
+                    ret = AStar.__explore__(left, _to, _rec_limit - 1, g_next, h_left, states)
                 elif (d.operation == StateOperator.RIGHT):
-                    ret = AStar.__explore__(right, _to, g_next, h_right, states)
+                    ret = AStar.__explore__(right, _to, _rec_limit - 1, g_next, h_right, states)
                 elif (d.operation == StateOperator.UP):
-                    ret = AStar.__explore__(up, _to, g_next, h_up, states)
+                    ret = AStar.__explore__(up, _to, _rec_limit - 1, g_next, h_up, states)
                 elif (d.operation == StateOperator.DOWN):
-                    ret = AStar.__explore__(down, _to, g_next, h_down, states)
+                    ret = AStar.__explore__(down, _to, _rec_limit - 1, g_next, h_down, states)
 
                 # If exploration yields final state, return sequence of directions (backwards!)
                 if isinstance(ret, FinSequence):
