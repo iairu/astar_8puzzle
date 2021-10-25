@@ -12,7 +12,7 @@ class StateOperator(Enum):
 
 class State(object):
 
-    def __init__(self, n: int, _elms: tuple):
+    def __init__(self, n: int, _elms: list):
         # todo later: cache position of 0 elm thorugh init args for quick access in operation()
         # todo later  \_ this way only init and fin states will have to be precalculated thru loops and operation() won't have to loop over elms to find the 0
         # todo later: cache manhattanSum as a tuple
@@ -33,14 +33,20 @@ class State(object):
         # side length
         self.n = n
 
-        # state elms must not be changed, that's why tuple (which is an immutable list)
-        self.elms = _elms
+        # state elms
+        # python by default makes list copies shallow which made me lose an hour of my life debugging
+        self.elms = []
+        for elm in _elms: # non-shallow copy
+            self.elms.append(elm)
 
         # defaults for unexplored directions
         self.left = None
         self.right = None
         self.up = None
         self.down = None
+
+        # # price for choosing the cheapest state (sorting)
+        # self.price = -1
 
         # delta compared to parent state, because every state only 1 elm moves
         # this is to directly identify it for manhattanDelta(), so that the whole manhattanSum() doesn't need
@@ -74,6 +80,11 @@ class State(object):
             if (ei < last and (ei + 1) % n == 0): s += "\n"
         return s
 
+    # def __lt__(self, _state):
+    #     # for sort()
+    #     if (self.price == -1):
+    #         return False # invalid price
+    #     return self.price < _state.price
 
     def operation(self, operator: StateOperator):
         # return if already explored
@@ -89,20 +100,24 @@ class State(object):
         # side length
         n = self.n
 
+        # elms that will be modified to generate a new state
+        # can't use elms = self.elms because it would be shallow
+        elms = []
+
         # find 0
+        # also copy elms from self.elms
         zcol = -1
         zrow = -1
         for ei, ev in enumerate(self.elms):
+            elms.append(ev)
             if (ev == 0):
                 zrow = int(ei / n)
                 zcol = ei % n
-                break
         # assert (zcol == -1 or zrow == -1), "There is no 0 in the current state" # already checked in main, maybe delete?
 
         # conclude operation based on operator enum over 0 and relevant elm next to it
         # mrow/mcol/mpos = modified row/column/position
         # zrow/zcol/zpos = zero row/column/position
-        elms = array("i",self.elms)
         if (operator == StateOperator.LEFT):
             # mrow = zrow
             # mcol = zcol + 1

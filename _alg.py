@@ -54,6 +54,11 @@ class AStar:
     def explore(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
         # Finally... THE ALGORITHM ITSELF
 
+        # got to final state check
+        if (_from.elms == _to.elms):
+            print("Found final state after " + str(g) + " (price) depth.")
+            return ""
+
         # existing states that if reached again won't be considered by the algorithm
         # no need to include the final state, because once it will be reached the algorithm will end successfuly
         if (states == None):
@@ -69,57 +74,57 @@ class AStar:
         if (h == None):
             h = AStar.manhattanSum(_from, _to) # default manhattan sum from _from to _to
 
-        print("FROM:")
-        print(_from)
-
-        print("TO:")
-        print(_to)
-
-        print(f"g, h = {g}, {h}")
-
         # for sorting after generation
         directions = []
 
         # generation, price calculation, sorting
-        _from.operation(StateOperator.LEFT)
-        if (_from.left != None and _from.left not in states):
-            h_next = h + AStar.manhattanDelta(_from.left, _to) # next manhattan sum
-            c_left = g_next + h_next
-            print(f"Left: c ({c_left}) = g + h = ({g_next} + {h_next})")
+        left = _from.operation(StateOperator.LEFT)
+        if (left != None and left not in states):
+            h_left = h + AStar.manhattanDelta(left, _to) # next manhattan sum
+            c_left = g_next + h_left
             directions.append(Direction(c_left, StateOperator.LEFT))
 
-        _from.operation(StateOperator.RIGHT)
-        if (_from.right != None and _from.right not in states):
-            h_next = h + AStar.manhattanDelta(_from.right, _to)
-            c_right = g_next + h_next
-            print(f"Right: c ({c_right}) = g + h = ({g_next} + {h_next})")
+        right = _from.operation(StateOperator.RIGHT)
+        if (right != None and right not in states):
+            h_right = h + AStar.manhattanDelta(right, _to)
+            c_right = g_next + h_right
             directions.append(Direction(c_right, StateOperator.RIGHT))
 
-        _from.operation(StateOperator.UP)
-        if (_from.up != None and _from.up not in states):
-            h_next = h + AStar.manhattanDelta(_from.up, _to)
-            c_up = g_next + h_next
-            print(f"Up: c ({c_up}) = g + h = ({g_next} + {h_next})")
-            directions.append(Direction(c_up, StateOperator.UP))
+        up = _from.operation(StateOperator.UP)
+        if (up != None and up not in states):
+                h_up = h + AStar.manhattanDelta(up, _to)
+                c_up = g_next + h_up
+                directions.append(Direction(c_up, StateOperator.UP))
 
-        _from.operation(StateOperator.DOWN)
-        if (_from.down != None and _from.down not in states):
-            h_next = h + AStar.manhattanDelta(_from.down, _to)
-            c_down = g_next + h_next
-            print(f"Down: c ({c_down}) = g + h = ({g_next} + {h_next})")
+        down = _from.operation(StateOperator.DOWN)
+        if (down != None and down not in states):
+            h_down = h + AStar.manhattanDelta(down, _to)
+            c_down = g_next + h_down
             directions.append(Direction(c_down, StateOperator.DOWN))
 
         # Sort all of the possible directions
         directions.sort()
 
-        # Explore sorted states
-        print("States will be further explored in the following order:")
+        # Explore sorted states (cheapest first)
         for d in directions:
             if isinstance(d, Direction):
-                print(f"{d.operation} (c = {d.price})")
-                # todo explore until _to found
-                #self.explore(_from.left, _to, g + 1, h + self.manhattanDelta(_from.left, _to), states)
-                # todo: \_ for each of these make sure to "return states" as any newly added ones in say c_left will be useful for c_right and so on
-                # todo: \_ the final sequence of operations necessary to get from _from to _to should just get saved in the AStar class, but for ...
-                # todo: \_ ... that it needs to get initialized first and __init__ should have _from and _to as args, then they shouldn't be in explore()
+                # Explore in the correct direction
+                if (d.operation == StateOperator.LEFT):
+                    states = AStar.explore(left, _to, g_next, h_left, states)
+                    direction_next = "-> LEFT "
+                elif (d.operation == StateOperator.RIGHT):
+                    states = AStar.explore(right, _to, g_next, h_right, states)
+                    direction_next = "-> RIGHT "
+                elif (d.operation == StateOperator.UP):
+                    states = AStar.explore(up, _to, g_next, h_up, states)
+                    direction_next = "-> UP "
+                elif (d.operation == StateOperator.DOWN):
+                    states = AStar.explore(down, _to, g_next, h_down, states)
+                    direction_next = "-> DOWN "
 
+                # If exploration yields final state, return sequence of directions (as string)
+                if isinstance(states, str):
+                    return direction_next + states
+
+        # Next direction's exploration needs to be aware of the last's exploration
+        return states

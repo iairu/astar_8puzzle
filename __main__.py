@@ -30,8 +30,20 @@ assert (found_zero == True), f"An element '0' (representing an empty field) must
 # side length is not part of the state and is simply checked ahead to speed things up
 assert (init_count == n * n), f"The number of elms in a state has to be n * n, otherwise it wouldn't be much of a side length, now would it?"
 
-AStar.explore(init, fin)
+explored = AStar.explore(init, fin)
+if isinstance(explored,str):
+    print(explored)
+else:
+    print("failed")
 
-AStar.explore(init2, fin2)
+explored = AStar.explore(init2, fin2)
+if isinstance(explored,str):
+    print(explored)
+else:
+    print("failed")
 
-AStar.explore(init3, fin3)
+explored = AStar.explore(init3, fin3)
+if isinstance(explored,str):
+    print(explored)
+else:
+    print("failed")
