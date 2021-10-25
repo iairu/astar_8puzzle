@@ -72,7 +72,7 @@ def main():
     n = in_sidelen()
     init = State(n, in_elms(n, "Initial"))
     fin = State(n, in_elms(n, "Final"))
-    AStar.explore(init, fin, in_rec_depth(1000))
+    AStar.explore(init, fin, in_rec_depth(sys.getrecursionlimit() - 150)) # assumed ideal recursion limit, slightly below python limit which is multitudes lower than C limit
 
     # init1 = State(n,[3,2,8,4,5,6,7,1,0])
     # fin1 = State(n,[1,2,3,4,5,6,7,8,0])
