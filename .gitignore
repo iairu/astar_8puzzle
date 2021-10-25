@@ -2,6 +2,7 @@ ignore/*
 __pycache__/*
 Zadanie.pdf
 *.code-workspace
-*.docx
 *.tmp
 *.csv
+*.xlsx
+*.pdf
