@@ -1,7 +1,6 @@
 from _state import *
 from _alg import *
 import sys
-import readchar
 
 def in_sidelen():
     # Side length user input
