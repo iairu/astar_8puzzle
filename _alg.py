@@ -132,7 +132,7 @@ class AStar:
 
         return explored
 
-    def __explore__(_from: State, _to: State, _heuristic: int, _rec_limit: int, g: int = None, h: int = None, states: set = None):
+    def __explore__(_from: State, _to: State, _heuristic: int, _rec_limit: int, g: int = None, h: int = None, states: set = None, directions: list = None):
         # Internal exploration function - The A* algorithm
 
         # returns sequence of ops if final found (tried to return list but it misidentified it as a set)
@@ -168,7 +168,8 @@ class AStar:
                 h = AStar.elmSum(_from, _to) # default "elms not on final pos" count from _from to _to
 
         # for sorting after generation
-        directions = []
+        if (directions == None):
+            directions = []
 
         # STATE EXPANSION USING OPS & EXPLORATION
 
@@ -180,7 +181,7 @@ class AStar:
             else:
                 h_left = h + AStar.elmDelta(left, _to)
             c_left = g_next + h_left
-            directions.append(Direction(c_left, StateOperator.LEFT))
+            directions.append(Direction(c_left, StateOperator.LEFT, left, h_left, g_next))
 
         right = _from.operation(StateOperator.RIGHT)
         if (right != None and right not in states):
@@ -189,7 +190,7 @@ class AStar:
             else:
                 h_right = h + AStar.elmDelta(right, _to)
             c_right = g_next + h_right
-            directions.append(Direction(c_right, StateOperator.RIGHT))
+            directions.append(Direction(c_right, StateOperator.RIGHT, right, h_right, g_next))
 
         up = _from.operation(StateOperator.UP)
         if (up != None and up not in states):
@@ -198,7 +199,7 @@ class AStar:
             else:
                 h_up = h + AStar.elmDelta(up, _to)
             c_up = g_next + h_up
-            directions.append(Direction(c_up, StateOperator.UP))
+            directions.append(Direction(c_up, StateOperator.UP, up, h_up, g_next))
 
         down = _from.operation(StateOperator.DOWN)
         if (down != None and down not in states):
@@ -207,27 +208,23 @@ class AStar:
             else:
                 h_down = h + AStar.elmDelta(down, _to)
             c_down = g_next + h_down
-            directions.append(Direction(c_down, StateOperator.DOWN))
+            directions.append(Direction(c_down, StateOperator.DOWN, down, h_down, g_next))
 
         # Sort all of the possible directions
         directions.sort()
 
-        # Explore sorted states (cheapest first)
+        # Explore a sorted state 
+        # (cheapest one first, rest are passed further, if the solution isn't found, others are explored after return)
         for d in directions:
             if isinstance(d, Direction):
                 # Explore in the correct direction
-                if (d.operation == StateOperator.LEFT):
-                    ret = AStar.__explore__(left, _to, _heuristic, _rec_limit - 1, g_next, h_left, states)
-                elif (d.operation == StateOperator.RIGHT):
-                    ret = AStar.__explore__(right, _to, _heuristic, _rec_limit - 1, g_next, h_right, states)
-                elif (d.operation == StateOperator.UP):
-                    ret = AStar.__explore__(up, _to, _heuristic, _rec_limit - 1, g_next, h_up, states)
-                elif (d.operation == StateOperator.DOWN):
-                    ret = AStar.__explore__(down, _to, _heuristic, _rec_limit - 1, g_next, h_down, states)
+                ret = AStar.__explore__(d.state, _to, _heuristic, _rec_limit - 1, g_next, d.h, states, directions.remove(d))
 
                 # If exploration yields final state, return sequence of directions (backwards!)
                 if isinstance(ret, FinSequence):
                     return ret.append(d.operation) # FinSequence append
+                elif (ret == None):
+                    return None # recursion limit
 
-        # Next direction's exploration needs to be aware of the last's exploration
+        # Failed to find solution
         return states
