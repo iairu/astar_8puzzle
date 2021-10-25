@@ -45,12 +45,12 @@ class FinSequence:
                         out += "U"
                     elif (op == StateOperator.DOWN):
                         out += "D"
-                elif isinstance(op,int):
-                    out += "\nFinal state found in depth of " + str(op)
-        else:
-            last = self.seq[len(self.seq) - 1]
-            if isinstance(last,int):
-                out = "Final state found in depth of " + str(last)
+
+        last = self.seq[len(self.seq) - 1]
+        if isinstance(last,int):
+            out += "\nFinal state found in depth of " + str(last)
+        elif last == None: # 0 automagically becomes None in python
+            out += "Final state found in depth of " + str(0)
         
         # printout
         print(out)

@@ -60,7 +60,7 @@ def in_rec_depth(default_rec_depth: int):
         out = default_rec_depth
     else:
         out = int(rd)
-        if (out < -1):
+        if (out < 0):
             print("Error: Invalid value, enter a number!")
             sys.exit()
     return out
