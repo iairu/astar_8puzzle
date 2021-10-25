@@ -1,6 +1,7 @@
 from _state import *
 from _alg import *
-from _seq import FinSequence
+
+# todo: add proper user input (either args or better scanf python thing)
 
 # later will be user input
 n = 3 # 8-puzzle side length
@@ -31,14 +32,6 @@ assert (found_zero == True), f"An element '0' (representing an empty field) must
 # side length is not part of the state and is simply checked ahead to speed things up
 assert (init_count == n * n), f"The number of elms in a state has to be n * n, otherwise it wouldn't be much of a side length, now would it?"
 
-explored = AStar.explore(init, fin)
-if isinstance(explored,FinSequence):
-    explored.print()
-
-explored = AStar.explore(init2, fin2)
-if isinstance(explored,FinSequence):
-    explored.print()
-
-explored = AStar.explore(init3, fin3)
-if isinstance(explored,FinSequence):
-    explored.print()
+AStar.explore(init, fin)
+AStar.explore(init2, fin2)
+AStar.explore(init3, fin3)

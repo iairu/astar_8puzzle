@@ -5,6 +5,7 @@ from _seq import *
 
 class AStar:
     def manhattanSum(_from: State, _to: State) -> int:
+        # exponential difficulty
         n = _from.n
         hsum = 0; # manhattan sum
         for fi,fval in enumerate(_from.elms):
@@ -26,6 +27,7 @@ class AStar:
         return hsum
 
     def manhattanDelta(_from: State, _to: State) -> int:
+        # linear difficulty
         n = _from.n
         delta = 0;
 
@@ -52,16 +54,34 @@ class AStar:
 
         return delta
 
-    def explore(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
-        # Finally... THE ALGORITHM ITSELF
+    # ---------------------------------
+
+    def explore(_from: State, _to: State, _print: int = 2):
+        # Public exploration function
+        # returns based on internal __explore__ function
+
+        # Call internal function and get variable result
+        explored = AStar.__explore__(_from, _to)
+
+        # Printing depending on result
+        if (_print > 0):
+            if isinstance(explored,FinSequence):
+                explored.print(True if (_print > 1) else False)
+            elif isinstance(explored,set):
+                print("No solution possible. All possible states explored.")
+
+        return explored
+
+    def __explore__(_from: State, _to: State, g: int = None, h: int = None, states: set = None):
+        # Internal exploration function - The A* algorithm
+
         # returns sequence of ops if final found (tried to return list but it misidentified it as a set)
-        # otherwise returns set of explored states
+        # otherwise returns set of explored states (if all possible states explored and no solution found)
 
         # CHECKS AND DEFAULTS
 
         # if final state return FinSequence, first value will be price
         if (_from.elms == _to.elms):
-            # print("Found final state after " + str(g) + " (price) depth.")
             return FinSequence(g)
 
         # existing states that if reached again won't be considered by the algorithm
@@ -117,18 +137,17 @@ class AStar:
             if isinstance(d, Direction):
                 # Explore in the correct direction
                 if (d.operation == StateOperator.LEFT):
-                    ret = AStar.explore(left, _to, g_next, h_left, states)
+                    ret = AStar.__explore__(left, _to, g_next, h_left, states)
                 elif (d.operation == StateOperator.RIGHT):
-                    ret = AStar.explore(right, _to, g_next, h_right, states)
+                    ret = AStar.__explore__(right, _to, g_next, h_right, states)
                 elif (d.operation == StateOperator.UP):
-                    ret = AStar.explore(up, _to, g_next, h_up, states)
+                    ret = AStar.__explore__(up, _to, g_next, h_up, states)
                 elif (d.operation == StateOperator.DOWN):
-                    ret = AStar.explore(down, _to, g_next, h_down, states)
+                    ret = AStar.__explore__(down, _to, g_next, h_down, states)
 
                 # If exploration yields final state, return sequence of directions (backwards!)
                 if isinstance(ret, FinSequence):
-                    return ret.append(d.operation)
+                    return ret.append(d.operation) # FinSequence append
 
         # Next direction's exploration needs to be aware of the last's exploration
-        # todo: python sets may be shallow, resaving/returning may not be necessary
         return states

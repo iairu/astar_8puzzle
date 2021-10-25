@@ -23,28 +23,35 @@ class FinSequence:
         # for ugly print()
         return str(self.seq)
 
-    def print(self):
+    def print(self, _full: bool = True):
         # for pretty print
+        # _full print also includes directions taken printed out
+
+        # for first oldest ordering list must be reversed
+        # because recursion return appending took place at the end not beginning
         if not (self.reversed):
             self.reverse()
 
+        # full or partial print generation
         out = ""
-        last_op = len(self.seq) - 2
-        for i, op in enumerate(self.seq):
-            if isinstance(op, StateOperator):
-                if (op == StateOperator.LEFT):
-                    out += "L"
-                elif (op == StateOperator.RIGHT):
-                    out += "R"
-                elif (op == StateOperator.UP):
-                    out += "U"
-                elif (op == StateOperator.DOWN):
-                    out += "D"
-
-                # if (i < last_op):
-                #     out += " -> "
-            elif isinstance(op,int):
-                out += "\nFinal state found in depth of " + str(op)
+        if (_full):
+            for op in self.seq:
+                if isinstance(op, StateOperator):
+                    if (op == StateOperator.LEFT):
+                        out += "L"
+                    elif (op == StateOperator.RIGHT):
+                        out += "R"
+                    elif (op == StateOperator.UP):
+                        out += "U"
+                    elif (op == StateOperator.DOWN):
+                        out += "D"
+                elif isinstance(op,int):
+                    out += "\nFinal state found in depth of " + str(op)
+        else:
+            last = self.seq[len(self.seq) - 1]
+            if isinstance(last,int):
+                out = "Final state found in depth of " + str(last)
         
+        # printout
         print(out)
         return
